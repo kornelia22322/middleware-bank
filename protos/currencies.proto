@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_package = "currencies";
+package currencies;
+
+service Currencies {
+    rpc CurrencyRates (stream Currency) returns (stream CurrencyRateMessage) {}
+}
+
+message CurrencyRateEntry {
+    string currencyName = 1;
+    float currencyRate = 2;
+}
+
+message CurrencyRatesEntries {
+    repeated CurrencyRateEntry entries = 1;
+}
+
+message EmptyMessage {}
+
+message Currency {
+    string currencyName = 2;
+}
+
+message CurrencyRateMessage {
+    oneof msg {
+        CurrencyRateEntry currencyRate = 1;
+        CurrencyRatesEntries currenciesRates = 2;
+    }
+}
