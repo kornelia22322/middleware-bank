@@ -2,18 +2,18 @@ const grpc = require('grpc');
 
 const PROTO_PATH = __dirname + '/../../protos/currencies.proto';
 
-const PORT = 50001;
+const PORT = 50051;
 
 const currencies_proto = grpc.load(PROTO_PATH).currencies;
 
 const supportedCurrencies = {'USD' : 1, 'EUR' : 1, 'CHF' : 1};
 const subscribersforCurrency = {};
 
-let bankId;
+let id = 0;
 
 function calculateCurrenciesRates() {
-  Object.entries(currencies).forEach(([currency, rate]) => {
-      currencies[currency] = Math.random() + 3;
+  Object.entries(supportedCurrencies).forEach(([currency, rate]) => {
+      supportedCurrencies[currency] = Math.random() + 3;
       notifySubscribers(currency);
   });
 }
@@ -23,20 +23,27 @@ function simulateCurrenciesRates(interval, func) {
 }
 
 function notifySubscribers(currency) {
-  console.log(`Notifying subscribers about ${currency} rate changed`);
-  subscribers[currency].forEach(subscriber => {
+  console.log(`Notifying subscribers about ${currency} rate changed to ${supportedCurrencies[currency]}`);
+  subscribersforCurrency[currency].forEach(subscriber => {
     try {
-      subscriber.write({currencyRate: {currencyRate: currencies[currency], currencyName: currency}})
+      subscriber.write({currencyRate: {currencyRate: supportedCurrencies[currency], currencyName: currency}})
     } catch(_) {
-      console.log('Error while sending message to bank. Removing it from subscribers');
+      console.log('Error while sending message to bank. Removing it from subscribers list');
       removeSubscriber(subscriber);
     }
   })
 }
 
+function removeSubscriber(subscriber) {
+  Object.keys(subscribersforCurrency).forEach((key) => {
+      subscribersforCurrency[key] = subscribersforCurrency[key].filter(sub => sub !== subscriber);
+    }
+  );
+}
+
 function getEntries() {
   return Object
-    .entries(currencies)
+    .entries(supportedCurrencies)
     .map(([currencyName, currencyRate]) => ({ currencyRate, currencyName }));
 }
 
@@ -48,12 +55,14 @@ function currencyRates(call) {
   call.write({ currenciesRates: { entries: getEntries() } });
 
   call.on('data', (msg) => {
-    if (msg.currencyName && currencies[msg.currencyName]) {
-      if (subscribers[msg.currencyName].indexOf(call) === -1){
+    if (msg.currencyName && supportedCurrencies[msg.currencyName]) {
+      if (subscribersforCurrency[msg.currencyName].indexOf(call) === -1){
         console.log(`Bank ${bankId} subscribed ${msg.currencyName}`);
-        subscribers[msg.currencyName].push(call);
+        subscribersforCurrency[msg.currencyName].push(call);
       }
     } else {
+
+      console.log(`Sending ${msg.currencyName} to bank ${bankId}`);
       call.write({ currenciesRates: { entries: getEntries() } })
     }
   });
@@ -71,5 +80,11 @@ Add a service to the server, with a corresponding implementation. */
 server.addService(currencies_proto.Currencies.service, { currencyRates });
 server.bind(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure());
 server.start();
+
+Object.keys(supportedCurrencies).forEach(curr => {
+    subscribersforCurrency[curr] = [];
+  });
+
+
 calculateCurrenciesRates();
-simulateCurrenciesRates(3000, calculateCurrenciesRates);
+simulateCurrenciesRates(7000, calculateCurrenciesRates);
