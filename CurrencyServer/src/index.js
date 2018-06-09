@@ -61,8 +61,8 @@ function currencyRates(call) {
         subscribersforCurrency[msg.currencyName].push(call);
       }
     } else {
-
       console.log(`Sending ${msg.currencyName} to bank ${bankId}`);
+      //after client connecting info about all currencies is send
       call.write({ currenciesRates: { entries: getEntries() } })
     }
   });
