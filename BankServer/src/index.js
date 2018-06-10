@@ -104,15 +104,15 @@ function createAccount(account) {
     throw new InvalidArgumentException({why: 'Missing nativeCurrency'});
   }
 
-  if (CurrencyService.currenciesSupported.indexOf(accountObject.nativeCurrency.toUpperCase()) === -1) {
+  if (currenciesSupported.indexOf(accountObject.nativeCurrency.toUpperCase()) === -1) {
     console.log('Currency not supported');
-    throw new InvalidArgumentException({why: `Currency not supported, supported currencies: ${CurrencyService.currenciesSupported}`});
+    throw new InvalidArgumentException({why: `Currency not supported, supported currencies: ${currenciesSupported}`});
   }
 
   const premiumThreshold = settings.PREMIUM_THRESHOLD || defaultSettings.PREMIUM_THRESHOLD;
   const isPremium =
     accountObject.incomeThreshold *
-    CurrencyService.currencyRates[accountObject.nativeCurrency.toUpperCase()] > premiumThreshold;
+    currencyRates[accountObject.nativeCurrency.toUpperCase()] > premiumThreshold;
   const account_guid = String(guid++);
 
   clients[accountObject.pesel] = accountObject;
@@ -139,12 +139,12 @@ function getLoanDetails(guid, loanParameters) {
   }
 
   if (!parameters.startDate) {
-    console.log('Missing stardDate');
+    console.log('Missing start Date');
     throw new InvalidArgumentException({ why: 'Missing startDate' })
   }
 
   if (!parameters.closeDate) {
-    console.log('Missing closeDate');
+    console.log('Missing close Date');
     throw new InvalidArgumentException({ why: 'Missing closeDate' })
   }
 
@@ -178,9 +178,9 @@ function getLoanDetails(guid, loanParameters) {
     throw new InvalidArgumentException({ why: 'startDate should be in future' })
   }
 
-  if (CurrencyService.currenciesSupported.indexOf(parameters.currency.toUpperCase()) === -1) {
+  if (currenciesSupported.indexOf(parameters.currency.toUpperCase()) === -1) {
     console.log('Unsupported currency');
-    throw new InvalidArgumentException({ why: `Unsupported currency, currencies supported ${CurrencyService.currenciesSupported}` })
+    throw new InvalidArgumentException({ why: `Unsupported currency, currencies supported ${currenciesSupported}` })
   }
 
   console.log('Calculating loanCosts');
@@ -192,7 +192,7 @@ function getLoanDetails(guid, loanParameters) {
 
   loanCosts.requestedCurrencyCost = parameters.moneyAmount + rates + commisionCosts;
   loanCosts.nativeCurrencyCost = loanCosts.requestedCurrencyCost /
-    CurrencyService.currencyRates[account.currency] * CurrencyService.currencyRates[parameters.currency.toUpperCase()];
+    currencyRates[account.currency] * currencyRates[parameters.currency.toUpperCase()];
 
   console.log('LoanCosts calculated: ', loanCosts);
 
