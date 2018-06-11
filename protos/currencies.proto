@@ -4,7 +4,7 @@ option java_package = "currencies";
 package currencies;
 
 service Currencies {
-    rpc CurrencyRates (stream Currency) returns (stream CurrencyRateMessage) {}
+    rpc CurrencyRates (stream Currency) returns (stream CurrencyRateEntry) {}
 }
 
 message CurrencyRateEntry {
@@ -12,19 +12,6 @@ message CurrencyRateEntry {
     float currencyRate = 2;
 }
 
-message CurrencyRatesEntries {
-    repeated CurrencyRateEntry entries = 1;
-}
-
-message EmptyMessage {}
-
 message Currency {
-    string currencyName = 2;
-}
-
-message CurrencyRateMessage {
-    oneof msg {
-        CurrencyRateEntry currencyRate = 1;
-        CurrencyRatesEntries currenciesRates = 2;
-    }
+    string currencyName = 1;
 }

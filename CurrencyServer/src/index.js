@@ -26,7 +26,7 @@ function notifySubscribers(currency) {
   console.log(`Notifying subscribers about ${currency} rate changed to ${supportedCurrencies[currency]}`);
   subscribersforCurrency[currency].forEach(subscriber => {
     try {
-      subscriber.write({currencyRate: {currencyRate: supportedCurrencies[currency], currencyName: currency}})
+      subscriber.write({currencyRate: supportedCurrencies[currency], currencyName: currency})
     } catch(_) {
       console.log('Error while sending message to bank. Removing it from subscribers list');
       removeSubscriber(subscriber);
@@ -52,7 +52,11 @@ function currencyRates(call) {
 
   console.log(`Bank ${bankId} connected`);
 
-  call.write({ currenciesRates: { entries: getEntries() } });
+  Object.keys(supportedCurrencies).forEach(currency => {
+    call.write({currencyName : currency, currencyRate: supportedCurrencies[currency]});
+  })
+  //
+  // call.write({ entries: getEntries() });
 
   call.on('data', (msg) => {
     if (msg.currencyName && supportedCurrencies[msg.currencyName]) {
@@ -63,7 +67,8 @@ function currencyRates(call) {
     } else {
       console.log(`Sending ${msg.currencyName} to bank ${bankId}`);
       //after client connecting info about all currencies is send
-      call.write({ currenciesRates: { entries: getEntries() } })
+      let receivedCurrencyName = msg.currencyName;
+      call.write({ currencyName : receivedCurrencyName, currencyRate: supportedCurrencies[receivedCurrencyName] })
     }
   });
 

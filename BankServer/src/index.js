@@ -35,17 +35,18 @@ function init() {
   })
 
   call.on('data', (data) => {
-    const msg = data[data.msg];
-    if (msg.entries) {
-      msg.entries.forEach(entry => {
-        console.log(entry);
-        currencyRates[entry.currencyName] = entry.currencyRate;
-      });
-    } else {
-      console.log(msg);
-      currencyRates[msg.currencyName] = msg.currencyRate;
+    console.log("Receive..");
+    console.log(data)
+    // if (msg.entries) {
+    //   msg.entries.forEach(entry => {
+    //     console.log(entry);
+    //     currencyRates[entry.currencyName] = entry.currencyRate;
+    //   });
+    // } else {
+      currencyRates[data.currencyName] = data.currencyRate;
+  //   }
     }
-  });
+  );
 }
 
 const PESEL_checker = new RegExp('[0-9]{11}');
@@ -226,9 +227,8 @@ async function startBankService() {
   multiplexedProcessor.registerProcessor('AccountService', accountService);
   multiplexedProcessor.registerProcessor('PremiumAccountService', premiumAccountService);
   const server = thrift.createMultiplexServer(multiplexedProcessor);
-  console.log(`Starting server on port ${port}`);
+  console.log(`Starting server on ${port}`);
   server.listen(port);
-  console.log('Bank service started');
 }
 
 process.argv.forEach((currency, index) => {
