@@ -1,4 +1,4 @@
-Middleware Bank Project Implementation. Created on Distributed System Classess AGH 2018.
+Middleware Bank Project Implementation. Project for Distributed System Classess AGH 2018.
 
 Consist of three parts:
 - Currency Server written in JS
