@@ -16,20 +16,20 @@ var AccountServiceProcessor = AccountService.Processor;
 var ttypes = require('./bank_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
-var PremiumAccountService_getLoanDetails_args = function(args) {
+var PremiumAccountService_getLoanInfo_args = function(args) {
   this.guid = null;
-  this.loanParameters = null;
+  this.loanConfig = null;
   if (args) {
     if (args.guid !== undefined && args.guid !== null) {
       this.guid = args.guid;
     }
-    if (args.loanParameters !== undefined && args.loanParameters !== null) {
-      this.loanParameters = new ttypes.LoanParameters(args.loanParameters);
+    if (args.loanConfig !== undefined && args.loanConfig !== null) {
+      this.loanConfig = new ttypes.LoanConfig(args.loanConfig);
     }
   }
 };
-PremiumAccountService_getLoanDetails_args.prototype = {};
-PremiumAccountService_getLoanDetails_args.prototype.read = function(input) {
+PremiumAccountService_getLoanInfo_args.prototype = {};
+PremiumAccountService_getLoanInfo_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -43,16 +43,16 @@ PremiumAccountService_getLoanDetails_args.prototype.read = function(input) {
     switch (fid)
     {
       case 1:
-      if (ftype == Thrift.Type.STRING) {
-        this.guid = input.readString();
+      if (ftype == Thrift.Type.I32) {
+        this.guid = input.readI32();
       } else {
         input.skip(ftype);
       }
       break;
       case 2:
       if (ftype == Thrift.Type.STRUCT) {
-        this.loanParameters = new ttypes.LoanParameters();
-        this.loanParameters.read(input);
+        this.loanConfig = new ttypes.LoanConfig();
+        this.loanConfig.read(input);
       } else {
         input.skip(ftype);
       }
@@ -66,16 +66,16 @@ PremiumAccountService_getLoanDetails_args.prototype.read = function(input) {
   return;
 };
 
-PremiumAccountService_getLoanDetails_args.prototype.write = function(output) {
-  output.writeStructBegin('PremiumAccountService_getLoanDetails_args');
+PremiumAccountService_getLoanInfo_args.prototype.write = function(output) {
+  output.writeStructBegin('PremiumAccountService_getLoanInfo_args');
   if (this.guid !== null && this.guid !== undefined) {
-    output.writeFieldBegin('guid', Thrift.Type.STRING, 1);
-    output.writeString(this.guid);
+    output.writeFieldBegin('guid', Thrift.Type.I32, 1);
+    output.writeI32(this.guid);
     output.writeFieldEnd();
   }
-  if (this.loanParameters !== null && this.loanParameters !== undefined) {
-    output.writeFieldBegin('loanParameters', Thrift.Type.STRUCT, 2);
-    this.loanParameters.write(output);
+  if (this.loanConfig !== null && this.loanConfig !== undefined) {
+    output.writeFieldBegin('loanConfig', Thrift.Type.STRUCT, 2);
+    this.loanConfig.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -83,16 +83,11 @@ PremiumAccountService_getLoanDetails_args.prototype.write = function(output) {
   return;
 };
 
-var PremiumAccountService_getLoanDetails_result = function(args) {
+var PremiumAccountService_getLoanInfo_result = function(args) {
   this.success = null;
   this.authorizationException = null;
-  this.invalidArgumentException = null;
   if (args instanceof ttypes.AuthorizationException) {
     this.authorizationException = args;
-    return;
-  }
-  if (args instanceof ttypes.InvalidArgumentException) {
-    this.invalidArgumentException = args;
     return;
   }
   if (args) {
@@ -102,13 +97,10 @@ var PremiumAccountService_getLoanDetails_result = function(args) {
     if (args.authorizationException !== undefined && args.authorizationException !== null) {
       this.authorizationException = args.authorizationException;
     }
-    if (args.invalidArgumentException !== undefined && args.invalidArgumentException !== null) {
-      this.invalidArgumentException = args.invalidArgumentException;
-    }
   }
 };
-PremiumAccountService_getLoanDetails_result.prototype = {};
-PremiumAccountService_getLoanDetails_result.prototype.read = function(input) {
+PremiumAccountService_getLoanInfo_result.prototype = {};
+PremiumAccountService_getLoanInfo_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -137,14 +129,6 @@ PremiumAccountService_getLoanDetails_result.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 2:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.invalidArgumentException = new ttypes.InvalidArgumentException();
-        this.invalidArgumentException.read(input);
-      } else {
-        input.skip(ftype);
-      }
-      break;
       default:
         input.skip(ftype);
     }
@@ -154,8 +138,8 @@ PremiumAccountService_getLoanDetails_result.prototype.read = function(input) {
   return;
 };
 
-PremiumAccountService_getLoanDetails_result.prototype.write = function(output) {
-  output.writeStructBegin('PremiumAccountService_getLoanDetails_result');
+PremiumAccountService_getLoanInfo_result.prototype.write = function(output) {
+  output.writeStructBegin('PremiumAccountService_getLoanInfo_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
@@ -164,11 +148,6 @@ PremiumAccountService_getLoanDetails_result.prototype.write = function(output) {
   if (this.authorizationException !== null && this.authorizationException !== undefined) {
     output.writeFieldBegin('authorizationException', Thrift.Type.STRUCT, 1);
     this.authorizationException.write(output);
-    output.writeFieldEnd();
-  }
-  if (this.invalidArgumentException !== null && this.invalidArgumentException !== undefined) {
-    output.writeFieldBegin('invalidArgumentException', Thrift.Type.STRUCT, 2);
-    this.invalidArgumentException.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -185,7 +164,7 @@ var PremiumAccountServiceClient = exports.Client = function(output, pClass) {
 Thrift.inherits(PremiumAccountServiceClient, AccountServiceClient);
 PremiumAccountServiceClient.prototype.seqid = function() { return this._seqid; };
 PremiumAccountServiceClient.prototype.new_seqid = function() { return this._seqid += 1; };
-PremiumAccountServiceClient.prototype.getLoanDetails = function(guid, loanParameters, callback) {
+PremiumAccountServiceClient.prototype.getLoanInfo = function(guid, loanConfig, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -196,28 +175,28 @@ PremiumAccountServiceClient.prototype.getLoanDetails = function(guid, loanParame
         _defer.resolve(result);
       }
     };
-    this.send_getLoanDetails(guid, loanParameters);
+    this.send_getLoanInfo(guid, loanConfig);
     return _defer.promise;
   } else {
     this._reqs[this.seqid()] = callback;
-    this.send_getLoanDetails(guid, loanParameters);
+    this.send_getLoanInfo(guid, loanConfig);
   }
 };
 
-PremiumAccountServiceClient.prototype.send_getLoanDetails = function(guid, loanParameters) {
+PremiumAccountServiceClient.prototype.send_getLoanInfo = function(guid, loanConfig) {
   var output = new this.pClass(this.output);
-  output.writeMessageBegin('getLoanDetails', Thrift.MessageType.CALL, this.seqid());
+  output.writeMessageBegin('getLoanInfo', Thrift.MessageType.CALL, this.seqid());
   var params = {
     guid: guid,
-    loanParameters: loanParameters
+    loanConfig: loanConfig
   };
-  var args = new PremiumAccountService_getLoanDetails_args(params);
+  var args = new PremiumAccountService_getLoanInfo_args(params);
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-PremiumAccountServiceClient.prototype.recv_getLoanDetails = function(input,mtype,rseqid) {
+PremiumAccountServiceClient.prototype.recv_getLoanInfo = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -226,20 +205,17 @@ PremiumAccountServiceClient.prototype.recv_getLoanDetails = function(input,mtype
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new PremiumAccountService_getLoanDetails_result();
+  var result = new PremiumAccountService_getLoanInfo_result();
   result.read(input);
   input.readMessageEnd();
 
   if (null !== result.authorizationException) {
     return callback(result.authorizationException);
   }
-  if (null !== result.invalidArgumentException) {
-    return callback(result.invalidArgumentException);
-  }
   if (null !== result.success) {
     return callback(null, result.success);
   }
-  return callback('getLoanDetails failed: unknown result');
+  return callback('getLoanInfo failed: unknown result');
 };
 var PremiumAccountServiceProcessor = exports.Processor = function(handler) {
   this._handler = handler;
@@ -261,40 +237,40 @@ PremiumAccountServiceProcessor.prototype.process = function(input, output) {
   }
 }
 ;
-PremiumAccountServiceProcessor.prototype.process_getLoanDetails = function(seqid, input, output) {
-  var args = new PremiumAccountService_getLoanDetails_args();
+PremiumAccountServiceProcessor.prototype.process_getLoanInfo = function(seqid, input, output) {
+  var args = new PremiumAccountService_getLoanInfo_args();
   args.read(input);
   input.readMessageEnd();
-  if (this._handler.getLoanDetails.length === 2) {
-    Q.fcall(this._handler.getLoanDetails.bind(this._handler), args.guid, args.loanParameters)
+  if (this._handler.getLoanInfo.length === 2) {
+    Q.fcall(this._handler.getLoanInfo.bind(this._handler), args.guid, args.loanConfig)
       .then(function(result) {
-        var result_obj = new PremiumAccountService_getLoanDetails_result({success: result});
-        output.writeMessageBegin("getLoanDetails", Thrift.MessageType.REPLY, seqid);
+        var result_obj = new PremiumAccountService_getLoanInfo_result({success: result});
+        output.writeMessageBegin("getLoanInfo", Thrift.MessageType.REPLY, seqid);
         result_obj.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
         var result;
-        if (err instanceof ttypes.AuthorizationException || err instanceof ttypes.InvalidArgumentException) {
-          result = new PremiumAccountService_getLoanDetails_result(err);
-          output.writeMessageBegin("getLoanDetails", Thrift.MessageType.REPLY, seqid);
+        if (err instanceof ttypes.AuthorizationException) {
+          result = new PremiumAccountService_getLoanInfo_result(err);
+          output.writeMessageBegin("getLoanInfo", Thrift.MessageType.REPLY, seqid);
         } else {
           result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
-          output.writeMessageBegin("getLoanDetails", Thrift.MessageType.EXCEPTION, seqid);
+          output.writeMessageBegin("getLoanInfo", Thrift.MessageType.EXCEPTION, seqid);
         }
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       });
   } else {
-    this._handler.getLoanDetails(args.guid, args.loanParameters, function (err, result) {
+    this._handler.getLoanInfo(args.guid, args.loanConfig, function (err, result) {
       var result_obj;
-      if ((err === null || typeof err === 'undefined') || err instanceof ttypes.AuthorizationException || err instanceof ttypes.InvalidArgumentException) {
-        result_obj = new PremiumAccountService_getLoanDetails_result((err !== null || typeof err === 'undefined') ? err : {success: result});
-        output.writeMessageBegin("getLoanDetails", Thrift.MessageType.REPLY, seqid);
+      if ((err === null || typeof err === 'undefined') || err instanceof ttypes.AuthorizationException) {
+        result_obj = new PremiumAccountService_getLoanInfo_result((err !== null || typeof err === 'undefined') ? err : {success: result});
+        output.writeMessageBegin("getLoanInfo", Thrift.MessageType.REPLY, seqid);
       } else {
         result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
-        output.writeMessageBegin("getLoanDetails", Thrift.MessageType.EXCEPTION, seqid);
+        output.writeMessageBegin("getLoanInfo", Thrift.MessageType.EXCEPTION, seqid);
       }
       result_obj.write(output);
       output.writeMessageEnd();

@@ -13,8 +13,8 @@ let id = 0;
 
 function calculateCurrenciesRates() {
   Object.entries(supportedCurrencies).forEach(([currency, rate]) => {
-      supportedCurrencies[currency] = Math.random() + 3;
-      notifySubscribers(currency);
+      supportedCurrencies[currency] = Math.random()*3 + 2;
+      notify(currency);
   });
 }
 
@@ -22,7 +22,7 @@ function simulateCurrenciesRates(interval, func) {
   setInterval(func, interval);
 }
 
-function notifySubscribers(currency) {
+function notify(currency) {
   console.log(`Notifying subscribers about ${currency} rate changed to ${supportedCurrencies[currency]}`);
   subscribersforCurrency[currency].forEach(subscriber => {
     try {
@@ -55,20 +55,13 @@ function currencyRates(call) {
   Object.keys(supportedCurrencies).forEach(currency => {
     call.write({currencyName : currency, currencyRate: supportedCurrencies[currency]});
   })
-  //
-  // call.write({ entries: getEntries() });
 
   call.on('data', (msg) => {
-    if (msg.currencyName && supportedCurrencies[msg.currencyName]) {
+    if (msg.currencyName != undefined && supportedCurrencies[msg.currencyName] != undefined) {
       if (subscribersforCurrency[msg.currencyName].indexOf(call) === -1){
         console.log(`Bank ${bankId} subscribed ${msg.currencyName}`);
         subscribersforCurrency[msg.currencyName].push(call);
       }
-    } else {
-      console.log(`Sending ${msg.currencyName} to bank ${bankId}`);
-      //after client connecting info about all currencies is send
-      let receivedCurrencyName = msg.currencyName;
-      call.write({ currencyName : receivedCurrencyName, currencyRate: supportedCurrencies[receivedCurrencyName] })
     }
   });
 
@@ -82,13 +75,15 @@ console.log(`Currency server on starting port ${PORT}`);
 const server = new grpc.Server();
 /* addService(service, implementation)
 Add a service to the server, with a corresponding implementation. */
+/* The Node.js library dynamically generates service descriptors
+and client stub definitions from .proto files loaded at runtime. */
 server.addService(currencies_proto.Currencies.service, { currencyRates });
 server.bind(`0.0.0.0:${PORT}`, grpc.ServerCredentials.createInsecure());
 server.start();
 
 Object.keys(supportedCurrencies).forEach(curr => {
     subscribersforCurrency[curr] = [];
-  });
+});
 
 
 calculateCurrenciesRates();

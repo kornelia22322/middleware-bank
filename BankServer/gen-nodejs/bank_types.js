@@ -11,12 +11,11 @@ var Q = thrift.Q;
 
 
 var ttypes = module.exports = {};
-var Account = module.exports.Account = function(args) {
+var Data = module.exports.Data = function(args) {
   this.pesel = null;
   this.firstname = null;
-  this.lastname = null;
-  this.incomeThreshold = null;
-  this.nativeCurrency = null;
+  this.surname = null;
+  this.income = null;
   if (args) {
     if (args.pesel !== undefined && args.pesel !== null) {
       this.pesel = args.pesel;
@@ -24,19 +23,16 @@ var Account = module.exports.Account = function(args) {
     if (args.firstname !== undefined && args.firstname !== null) {
       this.firstname = args.firstname;
     }
-    if (args.lastname !== undefined && args.lastname !== null) {
-      this.lastname = args.lastname;
+    if (args.surname !== undefined && args.surname !== null) {
+      this.surname = args.surname;
     }
-    if (args.incomeThreshold !== undefined && args.incomeThreshold !== null) {
-      this.incomeThreshold = args.incomeThreshold;
-    }
-    if (args.nativeCurrency !== undefined && args.nativeCurrency !== null) {
-      this.nativeCurrency = args.nativeCurrency;
+    if (args.income !== undefined && args.income !== null) {
+      this.income = args.income;
     }
   }
 };
-Account.prototype = {};
-Account.prototype.read = function(input) {
+Data.prototype = {};
+Data.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -65,21 +61,14 @@ Account.prototype.read = function(input) {
       break;
       case 3:
       if (ftype == Thrift.Type.STRING) {
-        this.lastname = input.readString();
+        this.surname = input.readString();
       } else {
         input.skip(ftype);
       }
       break;
       case 4:
       if (ftype == Thrift.Type.DOUBLE) {
-        this.incomeThreshold = input.readDouble();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 5:
-      if (ftype == Thrift.Type.STRING) {
-        this.nativeCurrency = input.readString();
+        this.income = input.readDouble();
       } else {
         input.skip(ftype);
       }
@@ -93,8 +82,8 @@ Account.prototype.read = function(input) {
   return;
 };
 
-Account.prototype.write = function(output) {
-  output.writeStructBegin('Account');
+Data.prototype.write = function(output) {
+  output.writeStructBegin('Data');
   if (this.pesel !== null && this.pesel !== undefined) {
     output.writeFieldBegin('pesel', Thrift.Type.STRING, 1);
     output.writeString(this.pesel);
@@ -105,117 +94,14 @@ Account.prototype.write = function(output) {
     output.writeString(this.firstname);
     output.writeFieldEnd();
   }
-  if (this.lastname !== null && this.lastname !== undefined) {
-    output.writeFieldBegin('lastname', Thrift.Type.STRING, 3);
-    output.writeString(this.lastname);
+  if (this.surname !== null && this.surname !== undefined) {
+    output.writeFieldBegin('surname', Thrift.Type.STRING, 3);
+    output.writeString(this.surname);
     output.writeFieldEnd();
   }
-  if (this.incomeThreshold !== null && this.incomeThreshold !== undefined) {
-    output.writeFieldBegin('incomeThreshold', Thrift.Type.DOUBLE, 4);
-    output.writeDouble(this.incomeThreshold);
-    output.writeFieldEnd();
-  }
-  if (this.nativeCurrency !== null && this.nativeCurrency !== undefined) {
-    output.writeFieldBegin('nativeCurrency', Thrift.Type.STRING, 5);
-    output.writeString(this.nativeCurrency);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-var AccountDetails = module.exports.AccountDetails = function(args) {
-  this.balance = null;
-  this.currency = null;
-  this.isPremium = null;
-  this.guid = null;
-  if (args) {
-    if (args.balance !== undefined && args.balance !== null) {
-      this.balance = args.balance;
-    }
-    if (args.currency !== undefined && args.currency !== null) {
-      this.currency = args.currency;
-    }
-    if (args.isPremium !== undefined && args.isPremium !== null) {
-      this.isPremium = args.isPremium;
-    }
-    if (args.guid !== undefined && args.guid !== null) {
-      this.guid = args.guid;
-    }
-  }
-};
-AccountDetails.prototype = {};
-AccountDetails.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.DOUBLE) {
-        this.balance = input.readDouble();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.STRING) {
-        this.currency = input.readString();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 3:
-      if (ftype == Thrift.Type.BOOL) {
-        this.isPremium = input.readBool();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.STRING) {
-        this.guid = input.readString();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-AccountDetails.prototype.write = function(output) {
-  output.writeStructBegin('AccountDetails');
-  if (this.balance !== null && this.balance !== undefined) {
-    output.writeFieldBegin('balance', Thrift.Type.DOUBLE, 1);
-    output.writeDouble(this.balance);
-    output.writeFieldEnd();
-  }
-  if (this.currency !== null && this.currency !== undefined) {
-    output.writeFieldBegin('currency', Thrift.Type.STRING, 2);
-    output.writeString(this.currency);
-    output.writeFieldEnd();
-  }
-  if (this.isPremium !== null && this.isPremium !== undefined) {
-    output.writeFieldBegin('isPremium', Thrift.Type.BOOL, 3);
-    output.writeBool(this.isPremium);
-    output.writeFieldEnd();
-  }
-  if (this.guid !== null && this.guid !== undefined) {
-    output.writeFieldBegin('guid', Thrift.Type.STRING, 4);
-    output.writeString(this.guid);
+  if (this.income !== null && this.income !== undefined) {
+    output.writeFieldBegin('income', Thrift.Type.DOUBLE, 4);
+    output.writeDouble(this.income);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -224,14 +110,10 @@ AccountDetails.prototype.write = function(output) {
 };
 
 var LoanCosts = module.exports.LoanCosts = function(args) {
-  this.nativeCurrencyCost = null;
-  this.requestedCurrencyCost = null;
+  this.currencyCost = null;
   if (args) {
-    if (args.nativeCurrencyCost !== undefined && args.nativeCurrencyCost !== null) {
-      this.nativeCurrencyCost = args.nativeCurrencyCost;
-    }
-    if (args.requestedCurrencyCost !== undefined && args.requestedCurrencyCost !== null) {
-      this.requestedCurrencyCost = args.requestedCurrencyCost;
+    if (args.currencyCost !== undefined && args.currencyCost !== null) {
+      this.currencyCost = args.currencyCost;
     }
   }
 };
@@ -251,18 +133,14 @@ LoanCosts.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.DOUBLE) {
-        this.nativeCurrencyCost = input.readDouble();
+        this.currencyCost = input.readDouble();
       } else {
         input.skip(ftype);
       }
       break;
-      case 2:
-      if (ftype == Thrift.Type.DOUBLE) {
-        this.requestedCurrencyCost = input.readDouble();
-      } else {
+      case 0:
         input.skip(ftype);
-      }
-      break;
+        break;
       default:
         input.skip(ftype);
     }
@@ -274,14 +152,9 @@ LoanCosts.prototype.read = function(input) {
 
 LoanCosts.prototype.write = function(output) {
   output.writeStructBegin('LoanCosts');
-  if (this.nativeCurrencyCost !== null && this.nativeCurrencyCost !== undefined) {
-    output.writeFieldBegin('nativeCurrencyCost', Thrift.Type.DOUBLE, 1);
-    output.writeDouble(this.nativeCurrencyCost);
-    output.writeFieldEnd();
-  }
-  if (this.requestedCurrencyCost !== null && this.requestedCurrencyCost !== undefined) {
-    output.writeFieldBegin('requestedCurrencyCost', Thrift.Type.DOUBLE, 2);
-    output.writeDouble(this.requestedCurrencyCost);
+  if (this.currencyCost !== null && this.currencyCost !== undefined) {
+    output.writeFieldBegin('currencyCost', Thrift.Type.DOUBLE, 1);
+    output.writeDouble(this.currencyCost);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -289,11 +162,10 @@ LoanCosts.prototype.write = function(output) {
   return;
 };
 
-var LoanParameters = module.exports.LoanParameters = function(args) {
+var LoanConfig = module.exports.LoanConfig = function(args) {
   this.currency = null;
   this.moneyAmount = null;
-  this.startDate = null;
-  this.closeDate = null;
+  this.daysCount = null;
   if (args) {
     if (args.currency !== undefined && args.currency !== null) {
       this.currency = args.currency;
@@ -301,16 +173,13 @@ var LoanParameters = module.exports.LoanParameters = function(args) {
     if (args.moneyAmount !== undefined && args.moneyAmount !== null) {
       this.moneyAmount = args.moneyAmount;
     }
-    if (args.startDate !== undefined && args.startDate !== null) {
-      this.startDate = args.startDate;
-    }
-    if (args.closeDate !== undefined && args.closeDate !== null) {
-      this.closeDate = args.closeDate;
+    if (args.daysCount !== undefined && args.daysCount !== null) {
+      this.daysCount = args.daysCount;
     }
   }
 };
-LoanParameters.prototype = {};
-LoanParameters.prototype.read = function(input) {
+LoanConfig.prototype = {};
+LoanConfig.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -338,15 +207,8 @@ LoanParameters.prototype.read = function(input) {
       }
       break;
       case 3:
-      if (ftype == Thrift.Type.STRING) {
-        this.startDate = input.readString();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.STRING) {
-        this.closeDate = input.readString();
+      if (ftype == Thrift.Type.I32) {
+        this.daysCount = input.readI32();
       } else {
         input.skip(ftype);
       }
@@ -360,8 +222,8 @@ LoanParameters.prototype.read = function(input) {
   return;
 };
 
-LoanParameters.prototype.write = function(output) {
-  output.writeStructBegin('LoanParameters');
+LoanConfig.prototype.write = function(output) {
+  output.writeStructBegin('LoanConfig');
   if (this.currency !== null && this.currency !== undefined) {
     output.writeFieldBegin('currency', Thrift.Type.STRING, 1);
     output.writeString(this.currency);
@@ -372,14 +234,91 @@ LoanParameters.prototype.write = function(output) {
     output.writeDouble(this.moneyAmount);
     output.writeFieldEnd();
   }
-  if (this.startDate !== null && this.startDate !== undefined) {
-    output.writeFieldBegin('startDate', Thrift.Type.STRING, 3);
-    output.writeString(this.startDate);
+  if (this.daysCount !== null && this.daysCount !== undefined) {
+    output.writeFieldBegin('daysCount', Thrift.Type.I32, 3);
+    output.writeI32(this.daysCount);
     output.writeFieldEnd();
   }
-  if (this.closeDate !== null && this.closeDate !== undefined) {
-    output.writeFieldBegin('closeDate', Thrift.Type.STRING, 4);
-    output.writeString(this.closeDate);
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var AccountInfo = module.exports.AccountInfo = function(args) {
+  this.balance = null;
+  this.guid = null;
+  this.isPremium = null;
+  if (args) {
+    if (args.balance !== undefined && args.balance !== null) {
+      this.balance = args.balance;
+    }
+    if (args.guid !== undefined && args.guid !== null) {
+      this.guid = args.guid;
+    }
+    if (args.isPremium !== undefined && args.isPremium !== null) {
+      this.isPremium = args.isPremium;
+    }
+  }
+};
+AccountInfo.prototype = {};
+AccountInfo.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.DOUBLE) {
+        this.balance = input.readDouble();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I32) {
+        this.guid = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.BOOL) {
+        this.isPremium = input.readBool();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+AccountInfo.prototype.write = function(output) {
+  output.writeStructBegin('AccountInfo');
+  if (this.balance !== null && this.balance !== undefined) {
+    output.writeFieldBegin('balance', Thrift.Type.DOUBLE, 1);
+    output.writeDouble(this.balance);
+    output.writeFieldEnd();
+  }
+  if (this.guid !== null && this.guid !== undefined) {
+    output.writeFieldBegin('guid', Thrift.Type.I32, 2);
+    output.writeI32(this.guid);
+    output.writeFieldEnd();
+  }
+  if (this.isPremium !== null && this.isPremium !== undefined) {
+    output.writeFieldBegin('isPremium', Thrift.Type.BOOL, 3);
+    output.writeBool(this.isPremium);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -433,62 +372,6 @@ AuthorizationException.prototype.read = function(input) {
 
 AuthorizationException.prototype.write = function(output) {
   output.writeStructBegin('AuthorizationException');
-  if (this.why !== null && this.why !== undefined) {
-    output.writeFieldBegin('why', Thrift.Type.STRING, 1);
-    output.writeString(this.why);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-var InvalidArgumentException = module.exports.InvalidArgumentException = function(args) {
-  Thrift.TException.call(this, "InvalidArgumentException");
-  this.name = "InvalidArgumentException";
-  this.why = null;
-  if (args) {
-    if (args.why !== undefined && args.why !== null) {
-      this.why = args.why;
-    }
-  }
-};
-Thrift.inherits(InvalidArgumentException, Thrift.TException);
-InvalidArgumentException.prototype.name = 'InvalidArgumentException';
-InvalidArgumentException.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.STRING) {
-        this.why = input.readString();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 0:
-        input.skip(ftype);
-        break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-InvalidArgumentException.prototype.write = function(output) {
-  output.writeStructBegin('InvalidArgumentException');
   if (this.why !== null && this.why !== undefined) {
     output.writeFieldBegin('why', Thrift.Type.STRING, 1);
     output.writeString(this.why);

@@ -1,56 +1,42 @@
 namespace java bank
 
-typedef string PESEL
-typedef string GUID
-typedef string Currency
-typedef string Date
-
-struct Account {
-    1: PESEL pesel,
+struct Data {
+    1: string pesel,
     2: string firstname,
-    3: string lastname,
-    4: double incomeThreshold,
-    5: string nativeCurrency,
-}
-
-struct AccountDetails {
-    1: double balance,
-    2: Currency currency,
-    3: bool isPremium,
-    4: GUID guid,
+    3: string surname,
+    4: double income,
 }
 
 struct LoanCosts {
-    1: double nativeCurrencyCost,
-    2: double requestedCurrencyCost,
+    1: double currencyCost,
 }
 
-struct LoanParameters {
-    1: Currency currency,
+struct LoanConfig {
+    1: string currency,
     2: double moneyAmount,
-    3: Date startDate,
-    4: Date closeDate,
+    3: i32 daysCount,
+}
+
+struct AccountInfo {
+    1: double balance,
+    2: i32 guid,
+    3: bool isPremium
 }
 
 exception AuthorizationException {
     1: string why
 }
 
-exception InvalidArgumentException {
-    1: string why
-}
-
 service AccountManagement {
-    AccountDetails createAccount(1: Account account) throws(1: InvalidArgumentException authorizationException),
+    AccountInfo create(1: Data data)
 }
 
 service AccountService {
-    AccountDetails getAccountDetails(1: GUID guid) throws(1: AuthorizationException authorizationException),
+    AccountInfo getAccountInfo(1: i32 guid) throws(1: AuthorizationException authorizationException),
 }
 
 service PremiumAccountService extends AccountService {
-    LoanCosts getLoanDetails(1: GUID guid, 2: LoanParameters loanParameters) throws (
-        1: AuthorizationException authorizationException,
-        2: InvalidArgumentException invalidArgumentException,
+    LoanCosts getLoanInfo(1: i32 guid, 2: LoanConfig loanConfig) throws (
+        1: AuthorizationException authorizationException
     ),
 }

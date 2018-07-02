@@ -13,16 +13,16 @@ var Q = thrift.Q;
 var ttypes = require('./bank_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
-var AccountManagement_createAccount_args = function(args) {
-  this.account = null;
+var AccountManagement_create_args = function(args) {
+  this.data = null;
   if (args) {
-    if (args.account !== undefined && args.account !== null) {
-      this.account = new ttypes.Account(args.account);
+    if (args.data !== undefined && args.data !== null) {
+      this.data = new ttypes.Data(args.data);
     }
   }
 };
-AccountManagement_createAccount_args.prototype = {};
-AccountManagement_createAccount_args.prototype.read = function(input) {
+AccountManagement_create_args.prototype = {};
+AccountManagement_create_args.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -37,8 +37,8 @@ AccountManagement_createAccount_args.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.STRUCT) {
-        this.account = new ttypes.Account();
-        this.account.read(input);
+        this.data = new ttypes.Data();
+        this.data.read(input);
       } else {
         input.skip(ftype);
       }
@@ -55,11 +55,11 @@ AccountManagement_createAccount_args.prototype.read = function(input) {
   return;
 };
 
-AccountManagement_createAccount_args.prototype.write = function(output) {
-  output.writeStructBegin('AccountManagement_createAccount_args');
-  if (this.account !== null && this.account !== undefined) {
-    output.writeFieldBegin('account', Thrift.Type.STRUCT, 1);
-    this.account.write(output);
+AccountManagement_create_args.prototype.write = function(output) {
+  output.writeStructBegin('AccountManagement_create_args');
+  if (this.data !== null && this.data !== undefined) {
+    output.writeFieldBegin('data', Thrift.Type.STRUCT, 1);
+    this.data.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -67,24 +67,16 @@ AccountManagement_createAccount_args.prototype.write = function(output) {
   return;
 };
 
-var AccountManagement_createAccount_result = function(args) {
+var AccountManagement_create_result = function(args) {
   this.success = null;
-  this.authorizationException = null;
-  if (args instanceof ttypes.InvalidArgumentException) {
-    this.authorizationException = args;
-    return;
-  }
   if (args) {
     if (args.success !== undefined && args.success !== null) {
-      this.success = new ttypes.AccountDetails(args.success);
-    }
-    if (args.authorizationException !== undefined && args.authorizationException !== null) {
-      this.authorizationException = args.authorizationException;
+      this.success = new ttypes.AccountInfo(args.success);
     }
   }
 };
-AccountManagement_createAccount_result.prototype = {};
-AccountManagement_createAccount_result.prototype.read = function(input) {
+AccountManagement_create_result.prototype = {};
+AccountManagement_create_result.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -99,20 +91,15 @@ AccountManagement_createAccount_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.STRUCT) {
-        this.success = new ttypes.AccountDetails();
+        this.success = new ttypes.AccountInfo();
         this.success.read(input);
       } else {
         input.skip(ftype);
       }
       break;
-      case 1:
-      if (ftype == Thrift.Type.STRUCT) {
-        this.authorizationException = new ttypes.InvalidArgumentException();
-        this.authorizationException.read(input);
-      } else {
+      case 0:
         input.skip(ftype);
-      }
-      break;
+        break;
       default:
         input.skip(ftype);
     }
@@ -122,16 +109,11 @@ AccountManagement_createAccount_result.prototype.read = function(input) {
   return;
 };
 
-AccountManagement_createAccount_result.prototype.write = function(output) {
-  output.writeStructBegin('AccountManagement_createAccount_result');
+AccountManagement_create_result.prototype.write = function(output) {
+  output.writeStructBegin('AccountManagement_create_result');
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
     this.success.write(output);
-    output.writeFieldEnd();
-  }
-  if (this.authorizationException !== null && this.authorizationException !== undefined) {
-    output.writeFieldBegin('authorizationException', Thrift.Type.STRUCT, 1);
-    this.authorizationException.write(output);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -148,7 +130,7 @@ var AccountManagementClient = exports.Client = function(output, pClass) {
 AccountManagementClient.prototype = {};
 AccountManagementClient.prototype.seqid = function() { return this._seqid; };
 AccountManagementClient.prototype.new_seqid = function() { return this._seqid += 1; };
-AccountManagementClient.prototype.createAccount = function(account, callback) {
+AccountManagementClient.prototype.create = function(data, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
     var _defer = Q.defer();
@@ -159,27 +141,27 @@ AccountManagementClient.prototype.createAccount = function(account, callback) {
         _defer.resolve(result);
       }
     };
-    this.send_createAccount(account);
+    this.send_create(data);
     return _defer.promise;
   } else {
     this._reqs[this.seqid()] = callback;
-    this.send_createAccount(account);
+    this.send_create(data);
   }
 };
 
-AccountManagementClient.prototype.send_createAccount = function(account) {
+AccountManagementClient.prototype.send_create = function(data) {
   var output = new this.pClass(this.output);
-  output.writeMessageBegin('createAccount', Thrift.MessageType.CALL, this.seqid());
+  output.writeMessageBegin('create', Thrift.MessageType.CALL, this.seqid());
   var params = {
-    account: account
+    data: data
   };
-  var args = new AccountManagement_createAccount_args(params);
+  var args = new AccountManagement_create_args(params);
   args.write(output);
   output.writeMessageEnd();
   return this.output.flush();
 };
 
-AccountManagementClient.prototype.recv_createAccount = function(input,mtype,rseqid) {
+AccountManagementClient.prototype.recv_create = function(input,mtype,rseqid) {
   var callback = this._reqs[rseqid] || function() {};
   delete this._reqs[rseqid];
   if (mtype == Thrift.MessageType.EXCEPTION) {
@@ -188,17 +170,14 @@ AccountManagementClient.prototype.recv_createAccount = function(input,mtype,rseq
     input.readMessageEnd();
     return callback(x);
   }
-  var result = new AccountManagement_createAccount_result();
+  var result = new AccountManagement_create_result();
   result.read(input);
   input.readMessageEnd();
 
-  if (null !== result.authorizationException) {
-    return callback(result.authorizationException);
-  }
   if (null !== result.success) {
     return callback(null, result.success);
   }
-  return callback('createAccount failed: unknown result');
+  return callback('create failed: unknown result');
 };
 var AccountManagementProcessor = exports.Processor = function(handler) {
   this._handler = handler;
@@ -219,40 +198,35 @@ AccountManagementProcessor.prototype.process = function(input, output) {
   }
 }
 ;
-AccountManagementProcessor.prototype.process_createAccount = function(seqid, input, output) {
-  var args = new AccountManagement_createAccount_args();
+AccountManagementProcessor.prototype.process_create = function(seqid, input, output) {
+  var args = new AccountManagement_create_args();
   args.read(input);
   input.readMessageEnd();
-  if (this._handler.createAccount.length === 1) {
-    Q.fcall(this._handler.createAccount.bind(this._handler), args.account)
+  if (this._handler.create.length === 1) {
+    Q.fcall(this._handler.create.bind(this._handler), args.data)
       .then(function(result) {
-        var result_obj = new AccountManagement_createAccount_result({success: result});
-        output.writeMessageBegin("createAccount", Thrift.MessageType.REPLY, seqid);
+        var result_obj = new AccountManagement_create_result({success: result});
+        output.writeMessageBegin("create", Thrift.MessageType.REPLY, seqid);
         result_obj.write(output);
         output.writeMessageEnd();
         output.flush();
       }, function (err) {
         var result;
-        if (err instanceof ttypes.InvalidArgumentException) {
-          result = new AccountManagement_createAccount_result(err);
-          output.writeMessageBegin("createAccount", Thrift.MessageType.REPLY, seqid);
-        } else {
-          result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
-          output.writeMessageBegin("createAccount", Thrift.MessageType.EXCEPTION, seqid);
-        }
+        result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+        output.writeMessageBegin("create", Thrift.MessageType.EXCEPTION, seqid);
         result.write(output);
         output.writeMessageEnd();
         output.flush();
       });
   } else {
-    this._handler.createAccount(args.account, function (err, result) {
+    this._handler.create(args.data, function (err, result) {
       var result_obj;
-      if ((err === null || typeof err === 'undefined') || err instanceof ttypes.InvalidArgumentException) {
-        result_obj = new AccountManagement_createAccount_result((err !== null || typeof err === 'undefined') ? err : {success: result});
-        output.writeMessageBegin("createAccount", Thrift.MessageType.REPLY, seqid);
+      if ((err === null || typeof err === 'undefined')) {
+        result_obj = new AccountManagement_create_result((err !== null || typeof err === 'undefined') ? err : {success: result});
+        output.writeMessageBegin("create", Thrift.MessageType.REPLY, seqid);
       } else {
         result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
-        output.writeMessageBegin("createAccount", Thrift.MessageType.EXCEPTION, seqid);
+        output.writeMessageBegin("create", Thrift.MessageType.EXCEPTION, seqid);
       }
       result_obj.write(output);
       output.writeMessageEnd();
